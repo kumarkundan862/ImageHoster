@@ -8,11 +8,14 @@ import ImageHoster.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 @Controller
@@ -37,12 +40,32 @@ public class UserController {
         return "users/registration";
     }
 
+    //This method validates if the password contains at least 1 alphabet, 1 number & 1 special character
     //This controller method is called when the request pattern is of type 'users/registration' and also the incoming request is of POST type
     //This method calls the business logic and after the user record is persisted in the database, directs to login page
     @RequestMapping(value = "users/registration", method = RequestMethod.POST)
-    public String registerUser(User user) {
-        userService.registerUser(user);
-        return "redirect:/users/login";
+    public String registerUser(User user, Model model) {
+        String error = "Password must contain atleast 1 alphabet, 1 number & 1 special character";
+        model.addAttribute("User",user);
+        model.addAttribute("passwordTypeError",error);
+
+        String regex = "^(?=.*[0-9])"
+                + "(?=.*[a-zA-Z])"
+                + "(?=.*[`_|!@#&()–[{}]:;',?/*~$^+=<>])"
+                + "(?=\\S+$).{3,}$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(user.getPassword());
+
+        if(matcher.matches()){
+            System.out.println("Entered in if condition");
+            userService.registerUser(user);
+            return "users/login";
+        }
+        else{
+            System.out.println("Entered in else condition");
+            return "users/registration";
+        }
     }
 
     //This controller method is called when the request pattern is of type 'users/login'
