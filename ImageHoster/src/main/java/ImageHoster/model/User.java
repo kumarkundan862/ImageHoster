@@ -41,6 +41,10 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
     private List<Image> images = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+    private List<Comment> comment = new ArrayList<>();
+
+
     public Integer getId() {
         return id;
     }
@@ -79,6 +83,14 @@ public class User {
 
     public void setImages(List<Image> images) {
         this.images = images;
+    }
+
+    public List<Comment> getComment() {
+        return comment;
+    }
+
+    public void setComment(List<Comment> comment) {
+        this.comment = comment;
     }
 }
 

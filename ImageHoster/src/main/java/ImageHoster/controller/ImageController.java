@@ -1,8 +1,10 @@
 package ImageHoster.controller;
 
+import ImageHoster.model.Comment;
 import ImageHoster.model.Image;
 import ImageHoster.model.Tag;
 import ImageHoster.model.User;
+import ImageHoster.service.CommentService;
 import ImageHoster.service.ImageService;
 import ImageHoster.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,9 @@ public class ImageController {
     @Autowired
     private TagService tagService;
 
+    @Autowired
+    private CommentService commentService;
+
     //This method displays all the images in the user home page after successful login
     @RequestMapping("images")
     public String getUserImages(Model model) {
@@ -36,7 +41,7 @@ public class ImageController {
     }
 
     //This method is called when the details of the specific image with corresponding title are to be displayed
-    //The logic is to get the image from the databse with corresponding title. After getting the image from the database the details are shown
+    //The logic is to get the image from the database with corresponding title. After getting the image from the database the details are shown
     //First receive the dynamic parameter in the incoming request URL in a string variable 'title' and also the Model type object
     //Call the getImageByTitle() method in the business logic to fetch all the details of that image
     //Add the image in the Model type object with 'image' as the key
@@ -52,6 +57,8 @@ public class ImageController {
         Image image = imageService.getImage(imageId);
         model.addAttribute("image", image);
         model.addAttribute("tags", image.getTags());
+        List<Comment>  comments = commentService.getAllCommentsByImageId(imageId);
+        model.addAttribute("comments",comments);
         return "images/image";
     }
 
@@ -108,7 +115,6 @@ public class ImageController {
         else{
             return "images/image";
         }
-
     }
 
     //This controller method is called when the request pattern is of type 'images/edit' and also the incoming request is of PUT type
@@ -142,8 +148,8 @@ public class ImageController {
         updatedImage.setDate(new Date());
 
         imageService.updateImage(updatedImage);
-       // return "redirect:/images/" + updatedImage.getTitle();
-        return "images/image" ;
+        //return ("redirect:/images/+ imageId+"/" updatedImage.getTitle());
+        return ("redirect:/images" +"/" + imageId+"/" +image.getTitle());
     }
 
 
@@ -166,10 +172,6 @@ public class ImageController {
         else{
             return "images/image";
         }
-
-
-
-
     }
 
 
